@@ -1,85 +1,74 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'; // Importiert die Header-Komponente
+import Navigation from './components/Navigation.vue'; // Importiert die Navigationsleiste
+import MoviesByCategory from './components/MoviesByCategory.vue'; // Zeigt Filme nach Kategorien an
+import MovieGrid from './components/MovieGrid.vue'; // Zeigt Filme in einem Raster an
+import GenreManager from './components/GenreManager.vue'; // Ermöglicht das Verwalten von Genres
+import AddMovieForm from './components/AddMovieForm.vue'; // Formular zum Hinzufügen von Filmen
+import { ref, computed } from 'vue'; // Reaktive Daten und berechnete Eigenschaften
+import { useMovieStore } from './stores/movieStore'; // Importiert den Pinia-Store
+
+// Zugriff auf den Store
+const store = useMovieStore(); // Ruft den Store ab
+const activeView = ref('all'); // Speichert die aktive Ansicht (Standard: "all")
+
+// Bestimmt, welche Komponente basierend auf der aktiven Ansicht angezeigt wird
+const currentComponent = computed(() => {
+  switch (activeView.value) {
+    case 'categories':
+      return MoviesByCategory;
+    case 'watched':
+      return MovieGrid;
+    case 'unwatched':
+      return MovieGrid;
+    case 'add':
+      return AddMovieForm;
+    default:
+      return MovieGrid;
+  }
+});
+
+// Gibt die Filme basierend auf der aktiven Ansicht zurück
+const currentMovies = computed(() => {
+  switch (activeView.value) {
+    case 'watched':
+      return store.watchedMovies;
+    case 'unwatched':
+      return store.unwatchedMovies;
+    default:
+      return store.filteredMovies;
+  }
+});
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="min-h-screen bg-[#020B34]">
+    <!-- Header-Komponente -->
+    <Header />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <!-- Navigationsleiste -->
+    <Navigation v-model="activeView" />
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+    <!-- Hauptinhalt -->
+    <main class="container mx-auto px-4 py-6">
+      <!-- Rendert die aktuelle Komponente basierend auf der aktiven Ansicht -->
+      <component
+        :is="currentComponent"
+        :movies="currentMovies"
+      />
 
-  <RouterView />
+      <!-- Zeigt den GenreManager nur an, wenn die Ansicht "categories" ist -->
+      <div v-if="activeView === 'categories'" class="mt-6">
+        <GenreManager />
+      </div>
+    </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+<style>
+/* Hintergrundfarbe und Textfarbe */
+body {
+  background-color: #020B34;
+  color: white;
 }
 </style>
