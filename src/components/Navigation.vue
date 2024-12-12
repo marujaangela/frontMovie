@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
+//import { ref } from 'vue';
+import { useMovieStore } from '../stores/movieStore.ts';
 import GenreDropdown from './GenreDropdown.vue';
 
 const store = useMovieStore();
-const activeTab = ref('all');
+//const activeTab = ref('all');
 
-const tabs = [
+const tabs:{id:"all"|"watched"|"unwatched", label:string}[] = [
   { id: 'all', label: 'All Movies' },
   { id: 'watched', label: 'Watched' },
   { id: 'unwatched', label: 'Unwatched' }

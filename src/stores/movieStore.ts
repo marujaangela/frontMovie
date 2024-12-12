@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Movie, Genre } from '@/types/movie';
+import {Genre, Movie} from "../types/movie.ts";
 
 export const useMovieStore = defineStore('movies', () => {
   // State: Speichert alle Filme
@@ -34,7 +34,7 @@ export const useMovieStore = defineStore('movies', () => {
 
   // Computed Property: Ungesehene Filme filtern
   const unwatchedMovies = computed(() =>
-    movies.value.filter(movie => !movie.watched)
+    movies.value.filter((movie: Movie) => !movie.watched)
   );
 
   // Computed Property: Aktuelle Filme basierend auf der Ansicht (all, watched, unwatched)

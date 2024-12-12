@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
 import MovieCard from './MovieCard.vue';
+import {useMovieStore} from "../stores/movieStore.ts";
 
 const store = useMovieStore();
 
