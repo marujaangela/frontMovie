@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
-import type { Movie } from '@/types/movie';
+import { useMovieStore } from '../stores/movieStore';
+import type { Movie } from '../types/movie';
 import { EyeIcon, EyeSlashIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import EditMovieForm from './EditMovieForm.vue';
 

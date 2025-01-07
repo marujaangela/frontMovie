@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
-import type { Movie } from '@/types/movie';
+import { useMovieStore } from '../stores/movieStore';
+import type { Movie } from '../types/movie';
 
 // Emits-Ereignis, um das Formular zu schließen
 const emit = defineEmits(['close']);

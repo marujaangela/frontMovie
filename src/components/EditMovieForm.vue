@@ -1,29 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
-import type { Movie } from '@/types/movie';
+import { useMovieStore } from '../stores/movieStore';
+import type { Movie } from '../types/movie';
 
-// Reaktive Props für den zu bearbeitenden Film
 const props = defineProps<{
-  movie: Movie;
+  movie: Movie
 }>();
 
-const emit = defineEmits(['close', 'save']); // Ereignisse zum Schließen und Speichern
-const store = useMovieStore(); // Zugriff auf den Store
+const emit = defineEmits(['close', 'save']);
+const store = useMovieStore();
 
-// Initialisierung der Felder mit den Film-Props
 const title = ref(props.movie.title);
 const releaseYear = ref(props.movie.releaseYear);
 const imageUrl = ref(props.movie.imageUrl);
 const description = ref(props.movie.description);
 const selectedGenres = ref([...props.movie.genre]);
 
-// Funktion: Änderungen speichern
 const saveMovie = () => {
   if (!title.value.trim() || !imageUrl.value.trim()) return;
 
   const updatedMovie: Movie = {
-    ...props.movie, // Beibehaltung der ursprünglichen ID und anderer unveränderter Felder
+    ...props.movie,
     title: title.value.trim(),
     releaseYear: releaseYear.value,
     genre: selectedGenres.value,
@@ -31,7 +28,93 @@ const saveMovie = () => {
     description: description.value.trim(),
   };
 
-  store.updateMovie(updatedMovie); // Aktualisierung des Films im Store
-  emit('save'); // Ereignis zum Speichern auslösen
+  store.updateMovie(updatedMovie);
+  emit('save');
 };
 </script>
+
+<template>
+  <div class="modal-overlay" @click="emit('close')">
+    <div class="modal-content p-6" @click.stop>
+      <h2 class="text-xl font-bold text-white mb-4">Edit Movie</h2>
+      <form @submit.prevent="saveMovie" class="space-y-4">
+        <div>
+          <label class="block text-white mb-2">Title</label>
+          <input
+            v-model="title"
+            type="text"
+            required
+            class="input-primary w-full"
+          />
+        </div>
+
+        <div>
+          <label class="block text-white mb-2">Release Year</label>
+          <input
+            v-model="releaseYear"
+            type="number"
+            required
+            class="input-primary w-full"
+          />
+        </div>
+
+        <div>
+          <label class="block text-white mb-2">Image URL</label>
+          <input
+            v-model="imageUrl"
+            type="url"
+            required
+            class="input-primary w-full"
+          />
+        </div>
+
+        <div>
+          <label class="block text-white mb-2">Description</label>
+          <textarea
+            v-model="description"
+            rows="3"
+            class="input-primary w-full"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-white mb-2">Genres</label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              v-for="genre in store.genres"
+              :key="genre.id"
+              @click="selectedGenres.includes(genre.id)
+                ? selectedGenres = selectedGenres.filter(g => g !== genre.id)
+                : selectedGenres.push(genre.id)"
+              :class="[
+                'px-3 py-1 rounded-full transition-colors',
+                selectedGenres.includes(genre.id)
+                  ? 'bg-[#FF6B4A] text-white'
+                  : 'bg-[#020B34] border border-[#FF6B4A] text-white'
+              ]"
+            >
+              {{ genre.name }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4 pt-4">
+          <button
+            type="button"
+            @click="emit('close')"
+            class="px-4 py-2 text-white hover:text-[#FF6B4A] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn-primary"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
+import { useMovieStore } from '../stores/movieStore';
 import MovieCard from './MovieCard.vue';
 import NoResults from './NoResults.vue';
 import MovieRecommendation from './MovieRecommendation.vue';
-import type { Movie } from '@/types/movie';
+import type { Movie } from '../types/movie';
 
 const store = useMovieStore();
 

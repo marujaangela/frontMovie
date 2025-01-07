@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
+import { useMovieStore } from '../stores/movieStore';
 
 const store = useMovieStore();
 const newGenreName = ref('');

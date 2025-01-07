@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
+import { useMovieStore } from '../stores/movieStore';
 import GenreManager from './GenreManager.vue';
 
 const store = useMovieStore();
@@ -30,7 +30,7 @@ const clearGenreFilter = () => {
       ]"
     >
       {{ store.selectedGenre
-      ? store.genres.find(g => g.id === store.selectedGenre)?.name
+      ? store.genres.find((g) => g.id === store.selectedGenre)?.name
       : 'Genre Filter' }}
     </button>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMovieStore } from '@/stores/movieStore';
+import { useMovieStore } from '../stores/movieStore';
 import MovieCard from './MovieCard.vue';
 import MovieRecommendation from './MovieRecommendation.vue';
 

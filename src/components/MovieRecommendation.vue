@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
-import type { Movie } from '@/types/movie';
+import type { Movie } from '../types/movie';
 
 defineProps<{
   movie: Movie
