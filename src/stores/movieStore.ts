@@ -157,7 +157,7 @@ export const useMovieStore = defineStore('movies', () => {
 
   const fetchGenres = async () => {
     try {
-      const response = await axios.get<Genre[]>(`${apiEndpoint}/genres`);
+      const response = await axios.get<Genre[]>(`${apiEndpoint}/api/genres`);
       genres.value = response.data;
     } catch (err) {
       error.value = 'Failed to fetch genres';
@@ -168,7 +168,7 @@ export const useMovieStore = defineStore('movies', () => {
   // Daten vom Backend laden
   const fetchMovies = async () => {
     try {
-      const response = await axios.get<Movie[]>(`${apiEndpoint}/movies`);
+      const response = await axios.get<Movie[]>(`${apiEndpoint}/api/movies`);
       movies.value = response.data;
     } catch (err) {
       error.value = 'Failed to fetch movies';
