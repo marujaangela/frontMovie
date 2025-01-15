@@ -16,7 +16,7 @@ const updateSearch = (event: Event) => {
 
 const closeSearch = () => {
   showSearchResults.value = false;
-  store.searchQuery = '';
+  store['searchQuery'] = '';
   searchQuery.value = '';
 };
 </script>

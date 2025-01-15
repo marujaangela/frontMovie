@@ -13,17 +13,17 @@ const props = defineProps<{
 }>();
 
 const groupedMovies = computed(() => {
-  if (!store.selectedGenre) {
+  if (!store.setSelectedGenre) {
     return store.moviesByGenre;
   }
 
   const filtered: Record<string, Movie[]> = {};
-  if (store.selectedGenre) {
+  if (store.setSelectedGenre) {
     const genreMovies = props.movies.filter(movie =>
-      movie.genre.includes(store.selectedGenre!)
+      movie.genre.includes(store.setSelectedGenre!)
     );
     if (genreMovies.length > 0) {
-      filtered[store.selectedGenre] = genreMovies;
+      filtered[store.setSelectedGenre] = genreMovies;
     }
   }
   return filtered;
@@ -50,7 +50,7 @@ const groupedMovies = computed(() => {
       >
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-bold text-white">
-            {{ store.genres.find(g => g.id === genreId)?.name }}
+            {{ store.genres.find(g => g.name === genreId)?.name }}
           </h2>
           <button
             v-if="store.currentView !== 'watched'"

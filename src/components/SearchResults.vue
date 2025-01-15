@@ -25,10 +25,10 @@ const moviesByMatchingGenre = computed(() => {
   const results: Record<string, any[]> = {};
   matchingGenres.value.forEach(genre => {
     const movies = store.movies.filter(movie =>
-      movie.genre.includes(genre.id)
+      movie.genre.includes(genre.name)
     );
     if (movies.length > 0) {
-      results[genre.id] = movies;
+      results[genre.name] = movies;
     }
   });
   return results;
@@ -53,7 +53,7 @@ const moviesByMatchingGenre = computed(() => {
     <div v-if="Object.keys(moviesByMatchingGenre).length > 0" class="space-y-8">
       <div v-for="(movies, genreId) in moviesByMatchingGenre" :key="genreId" class="space-y-4">
         <h2 class="text-xl font-bold text-white">
-          {{ store.genres.find(g => g.id === genreId)?.name }}
+          {{ store.genres.find(g => g.name === genreId)?.name }}
         </h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <MovieCard

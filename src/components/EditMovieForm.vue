@@ -84,12 +84,12 @@ const saveMovie = () => {
               type="button"
               v-for="genre in store.genres"
               :key="genre.id"
-              @click="selectedGenres.includes(genre.id)
-                ? selectedGenres = selectedGenres.filter(g => g !== genre.id)
-                : selectedGenres.push(genre.id)"
+              @click="selectedGenres.includes(genre.name)
+                ? selectedGenres = selectedGenres.filter(g => g !== genre.name)
+                : selectedGenres.push(genre.name)"
               :class="[
                 'px-3 py-1 rounded-full transition-colors',
-                selectedGenres.includes(genre.id)
+                selectedGenres.includes(genre.name)
                   ? 'bg-[#FF6B4A] text-white'
                   : 'bg-[#020B34] border border-[#FF6B4A] text-white'
               ]"

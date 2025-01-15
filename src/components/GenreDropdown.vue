@@ -8,12 +8,12 @@ const isEditMode = ref(false);
 const isOpen = ref(false);
 
 const selectGenre = (genreId: string) => {
-  store.setSelectedGenre(genreId);
+  store.setSelectedGenre = genreId;
   isOpen.value = false;
 };
 
 const clearGenreFilter = () => {
-  store.setSelectedGenre(null);
+  store.setSelectedGenre = null;
   isOpen.value = false;
 };
 </script>
@@ -24,13 +24,13 @@ const clearGenreFilter = () => {
       @click="isOpen = !isOpen"
       :class="[
         'px-4 py-2 rounded-full transition-colors',
-        store.selectedGenre
+        store.setSelectedGenre
           ? 'bg-[#FF6B4A] text-white'
           : 'border border-[#FF6B4A] text-[#FF6B4A] hover:bg-[#FF6B4A] hover:text-white'
       ]"
     >
-      {{ store.selectedGenre
-      ? store.genres.find((g) => g.id === store.selectedGenre)?.name
+      {{ store.setSelectedGenre
+      ? store.genres.find((g) => g.name === store.setSelectedGenre)?.name
       : 'Genre Filter' }}
     </button>
 
@@ -46,7 +46,7 @@ const clearGenreFilter = () => {
         <button
           v-for="genre in store.genres"
           :key="genre.id"
-          @click="selectGenre(genre.id)"
+          @click="selectGenre(genre.name)"
           class="w-full text-left px-3 py-2 text-white hover:bg-[#FF6B4A]/10 rounded-md transition-colors"
         >
           {{ genre.name }}

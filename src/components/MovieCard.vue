@@ -15,7 +15,7 @@ const isEditing = ref(false);
 
 const handleDelete = () => {
   if (confirm('Are you sure you want to delete this movie?')) {
-    store.removeMovie(props.movie.id);
+    store.removeMovie(props.movie.title);
   }
 };
 </script>
@@ -42,7 +42,7 @@ const handleDelete = () => {
 
         <div class="flex justify-between items-center">
           <button
-            @click.stop="store.toggleWatched(movie.id)"
+            @click.stop="store.toggleWatched(movie.title)"
             class="text-white hover:text-[#FF6B4A] transition-colors"
             :title="movie.watched ? 'Mark as unwatched' : 'Mark as watched'"
           >

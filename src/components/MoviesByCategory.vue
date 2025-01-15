@@ -9,8 +9,8 @@ const store = useMovieStore();
 const moviesByGenre = computed(() => {
   const grouped: Record<string, any[]> = {};
   store.genres.forEach(genre => {
-    grouped[genre.id] = store.movies.filter(movie =>
-      movie.genre.includes(genre.id)
+    grouped[genre.name] = store.movies.filter(movie =>
+      movie.genre.includes(genre.name)
     );
   });
   return grouped;

@@ -4,22 +4,18 @@ import axios from 'axios';
 import type { Movie, Genre } from "../types/movie.ts";
 
 // API-Endpunkte
-const apiEndpoint = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+const apiEndpoint = `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/api/movies`;
+const apiEndpointTwo = `${import.meta.env.VITE_APP_BACKEND_BASE_URL}/api/genres`;
 
 export const useMovieStore = defineStore('movies', () => {
   // State
   const movies = ref<Movie[]>([]);
   const genres = ref<Genre[]>([]);
-  const searchQuery = ref(''); // Der aktuelle Suchtext
-  const recommendedMovie = ref<Movie | null>(null); // Ein empfohlener Film
-  const selectedGenre = ref<string | null>(null); // Das aktuell ausgewählte Genre
-  const currentView = ref<'all' | 'watched' | 'unwatched'>('all'); // Aktive Ansicht
+  const searchQuery = ref('');
+  const recommendedMovie = ref<Movie | null>(null);
+  const setSelectedGenre = ref<string | null>(null);
+  const currentView = ref<'all' | 'watched' | 'unwatched'>('all');
   const error = ref<string | null>(null);
-
-  genres.value.push({
-    id: 'test-genre',
-    name: 'Test Genre',
-  });
 
   // Computed Property: Gesehene Filme filtern
   const watchedMovies = computed(() =>
@@ -31,55 +27,51 @@ export const useMovieStore = defineStore('movies', () => {
     movies.value.filter(movie => !movie.watched)
   );
 
-  // Computed Property: Aktuelle Filme basierend auf der Ansicht (all, watched, unwatched)
+  // Computed Property: Aktuelle Filme basierend auf der Ansicht
   const currentMovies = computed(() => {
     switch (currentView.value) {
-      case 'watched': // Wenn die Ansicht "gesehene Filme" ist
+      case 'watched':
         return watchedMovies.value;
-      case 'unwatched': // Wenn die Ansicht "ungesehene Filme" ist
+      case 'unwatched':
         return unwatchedMovies.value;
-      default: // Standard: Alle Filme
+      default:
         return movies.value;
     }
   });
 
   // Computed Property: Gruppiert Filme nach Genre
   const moviesByGenre = computed(() => {
-    const moviesSource = currentMovies.value; // Die gefilterten Filme
-    const grouped: Record<string, Movie[]> = {}; // Ergebnis als Dictionary
+    const moviesSource = currentMovies.value;
+    const grouped: Record<string, Movie[]> = {};
 
     genres.value.forEach(genre => {
-      // Filme nach Genre-ID filtern
       const genreMovies = moviesSource.filter(movie =>
-        movie.genre.includes(genre.id)
+        movie.genre.includes(genre.name)
       );
       if (genreMovies.length > 0) {
-        // Nur Genres hinzufügen, die Filme enthalten
-        grouped[genre.id] = genreMovies;
+        grouped[genre.name] = genreMovies;
       }
     });
     return grouped;
   });
 
-  // Computed Property: Filtert Filme basierend auf Suchtext und ausgewähltem Genre
+  // Computed Property: Filtert Filme basierend auf Suchtext und Genre
   const filteredMovies = computed(() => {
-    let filtered = currentMovies.value; // Ausgangspunkt: Alle aktuellen Filme
+    let filtered = currentMovies.value;
 
-    if (selectedGenre.value) {
-      // Filme nach Genre-ID filtern
+    if (setSelectedGenre.value) {
       filtered = filtered.filter(movie =>
-        movie.genre.includes(selectedGenre.value!)
+        movie.genre.includes(setSelectedGenre.value!)
       );
     }
 
     if (searchQuery.value) {
-      // Filme nach Titel oder Genre-Name filtern
       const query = searchQuery.value.toLowerCase();
       filtered = filtered.filter(movie =>
-        movie.title.toLowerCase().includes(query) || // Filter nach Titel
+        movie.title.toLowerCase().includes(query) ||
         movie.genre.some(genreId => {
-          const genre = genres.value.find(g => g.id === genreId); // Genre finden
-          return genre?.name.toLowerCase().includes(query); // Filter nach Genre-Name
+          const genre = genres.value.find(g => g.name === genreId);
+          return genre?.name.toLowerCase().includes(query);
         })
       );
     }
@@ -87,77 +79,105 @@ export const useMovieStore = defineStore('movies', () => {
     return filtered;
   });
 
-  // Methode: Ansicht ändern
-  function setView(view: 'all' | 'watched' | 'unwatched') {
-    currentView.value = view; // Ansicht aktualisieren
-    recommendedMovie.value = null; // Empfehlung zurücksetzen
-  }
-
-  // Methode: Ausgewähltes Genre ändern
-  function setSelectedGenre(genreId: string | null) {
-    selectedGenre.value = genreId; // Genre aktualisieren
-    recommendedMovie.value = null; // Empfehlung zurücksetzen
-  }
-
   // Methode: Einen neuen Film hinzufügen
   function addMovie(movie: Movie) {
-    movies.value.push({ ...movie, watched: false }); // Neuen Film hinzufügen, standardmäßig nicht gesehen
+    axios
+      .post<Movie>(apiEndpoint, movie)
+      .then(response => {
+        movies.value.push(response.data);
+      })
+      .catch(err => {
+        error.value = 'Failed to add the movie';
+        console.error(err);
+      });
   }
 
   // Methode: Einen existierenden Film aktualisieren
   function updateMovie(updatedMovie: Movie) {
-    const index = movies.value.findIndex(m => m.id === updatedMovie.id); // Film suchen
-    if (index !== -1) {
-      movies.value[index] = updatedMovie; // Film aktualisieren
-    }
+    axios
+      .put<Movie>(`${apiEndpoint}/${updatedMovie.id}`, updatedMovie)
+      .then(response => {
+        const index = movies.value.findIndex(m => m.id === updatedMovie.id);
+        if (index !== -1) {
+          movies.value[index] = response.data;
+        }
+      })
+      .catch(err => {
+        error.value = 'Failed to update the movie';
+        console.error(err);
+      });
   }
 
   // Methode: Einen Film entfernen
   function removeMovie(id: string) {
-    movies.value = movies.value.filter(m => m.id !== id); // Film nach ID entfernen
-  }
-
-  // Methode: "Gesehen"-Status eines Films umschalten
-  function toggleWatched(id: string) {
-    const movie = movies.value.find(m => m.id === id); // Film finden
-    if (movie) {
-      movie.watched = !movie.watched; // Status umschalten
-    }
+    axios
+      .delete(`${apiEndpoint}/${id}`)
+      .then(() => {
+        movies.value = movies.value.filter(m => m.id !== id);
+      })
+      .catch(err => {
+        error.value = 'Failed to delete the movie';
+        console.error(err);
+      });
   }
 
   // Methode: Ein neues Genre hinzufügen
   function addGenre(genre: Genre) {
-    genres.value.push(genre); // Neues Genre hinzufügen
+    axios
+      .post<Genre>(apiEndpointTwo, genre)
+      .then(response => {
+        genres.value.push(response.data);
+      })
+      .catch(err => {
+        error.value = 'Failed to add the genre';
+        console.error(err);
+      });
   }
 
   // Methode: Ein Genre entfernen
   function removeGenre(id: string) {
-    genres.value = genres.value.filter(g => g.id !== id); // Genre entfernen
-    movies.value.forEach(movie => {
-      // Genre auch aus allen Filmen entfernen
-      movie.genre = movie.genre.filter(g => g !== id);
-    });
+    axios
+      .delete(`${apiEndpointTwo}/${id}`)
+      .then(() => {
+        genres.value = genres.value.filter(g => g.name!== id);
+        movies.value.forEach(movie => {
+          movie.genre = movie.genre.filter(g => g !== id);
+        });
+      })
+      .catch(err => {
+        error.value = 'Failed to delete the genre';
+        console.error(err);
+      });
+  }
+
+  // Methode: "Gesehen"-Status eines Films umschalten
+  function toggleWatched(id: string) {
+    const movie = movies.value.find(m => m.id === id);
+    if (movie) {
+      movie.watched = !movie.watched;
+      updateMovie(movie); // Optional: Status auch im Backend speichern
+    }
   }
 
   // Methode: Empfehlung generieren
   function generateRecommendation(genreId: string) {
-    // Filme finden, die zum Genre passen und noch nicht gesehen wurden
     const eligibleMovies = currentMovies.value.filter(movie =>
       movie.genre.includes(genreId) && !movie.watched
     );
 
     if (eligibleMovies.length === 0) {
-      recommendedMovie.value = null; // Keine Empfehlung, wenn keine passenden Filme
+      recommendedMovie.value = null;
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * eligibleMovies.length); // Zufälligen Film auswählen
-    recommendedMovie.value = eligibleMovies[randomIndex]; // Empfehlung setzen
+    const randomIndex = Math.floor(Math.random() * eligibleMovies.length);
+    recommendedMovie.value = eligibleMovies[randomIndex];
   }
 
+  // Daten vom Backend laden
   const fetchGenres = async () => {
     try {
-      const response = await axios.get<Genre[]>(`${apiEndpoint}/api/genres`);
+      const response = await axios.get<Genre[]>(apiEndpointTwo);
       genres.value = response.data;
     } catch (err) {
       error.value = 'Failed to fetch genres';
@@ -165,10 +185,15 @@ export const useMovieStore = defineStore('movies', () => {
     }
   };
 
-  // Daten vom Backend laden
+  // Methode: Ansicht ändern
+  function setView(view: 'all' | 'watched' | 'unwatched') {
+    currentView.value = view; // Ansicht aktualisieren
+    recommendedMovie.value = null; // Empfehlung zurücksetzen
+  }
+
   const fetchMovies = async () => {
     try {
-      const response = await axios.get<Movie[]>(`${apiEndpoint}/api/movies`);
+      const response = await axios.get<Movie[]>(apiEndpoint);
       movies.value = response.data;
     } catch (err) {
       error.value = 'Failed to fetch movies';
@@ -182,27 +207,25 @@ export const useMovieStore = defineStore('movies', () => {
     fetchGenres();
   });
 
-  // Rückgabe: Alles, was der Store bereitstellt
   return {
     movies,
     genres,
     searchQuery,
     recommendedMovie,
-    selectedGenre,
+    setSelectedGenre,
     currentView,
+    setView,
     watchedMovies,
     unwatchedMovies,
     currentMovies,
     moviesByGenre,
     filteredMovies,
-    setView,
-    setSelectedGenre,
     addMovie,
     updateMovie,
     removeMovie,
     toggleWatched,
     addGenre,
     removeGenre,
-    generateRecommendation,
+    generateRecommendation
   };
 });

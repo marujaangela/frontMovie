@@ -8,7 +8,6 @@ const newGenreName = ref('');
 const addGenre = () => {
   if (newGenreName.value.trim()) {
     store.addGenre({
-      id: crypto.randomUUID(),
       name: newGenreName.value.trim()
     });
     newGenreName.value = '';
@@ -48,7 +47,7 @@ const handleDeleteGenre = (genreId: string, genreName: string) => {
       >
         {{ genre.name }}
         <button
-          @click="handleDeleteGenre(genre.id, genre.name)"
+          @click="handleDeleteGenre(genre.name, genre.name)"
           class="text-sm hover:text-red-200 ml-2"
           title="Delete genre"
         >
