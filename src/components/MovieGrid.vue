@@ -50,11 +50,11 @@ const groupedMovies = computed(() => {
       >
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-bold text-white">
-            {{ store.genres.find(g => g.name === genreId)?.name }}
+            {{ store.genres.find(g => g.id === Number(genreId))?.name }}
           </h2>
           <button
             v-if="store.currentView !== 'watched'"
-            @click="store.generateRecommendation(genreId)"
+            @click="store.generateRecommendation(Number(genreId))"
             class="px-4 py-2 bg-[#FF6B4A] text-white rounded-md hover:bg-opacity-90 transition-colors"
           >
             Get Recommendation

@@ -16,9 +16,10 @@ const addGenre = () => {
 
 const handleDeleteGenre = (genreId: string, genreName: string) => {
   if (confirm(`Are you sure you want to delete the genre "${genreName}"? This will remove it from all movies.`)) {
-    store.removeGenre(genreId);
+    store.removeGenre(Number(genreId)); // Konvertiere genreId in eine Zahl
   }
 };
+
 </script>
 
 <template>
