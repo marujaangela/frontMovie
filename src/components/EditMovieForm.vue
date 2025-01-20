@@ -14,7 +14,7 @@ const title = ref(props.movie.title);
 const releaseYear = ref(props.movie.releaseYear);
 const imageUrl = ref(props.movie.imageUrl);
 const description = ref(props.movie.description);
-const selectedGenres = ref([...props.movie.genre]);
+const selectedGenres =ref<number | null>(props.movie.genre || null);
 
 const saveMovie = () => {
   if (!title.value.trim() || !imageUrl.value.trim()) return;
@@ -23,7 +23,7 @@ const saveMovie = () => {
     ...props.movie,
     title: title.value.trim(),
     releaseYear: releaseYear.value,
-    genre: selectedGenres.value,
+    genre: selectedGenres.value as number,
     imageUrl: imageUrl.value.trim(),
     description: description.value.trim(),
   };
@@ -84,15 +84,15 @@ const saveMovie = () => {
               type="button"
               v-for="genre in store.genres"
               :key="genre.id"
-              @click="selectedGenres.includes(genre.name)
-                ? selectedGenres = selectedGenres.filter(g => g !== genre.name)
-                : selectedGenres.push(genre.name)"
+              @click="selectedGenres === (genre.id ?? null)
+              ? selectedGenres = null
+               : selectedGenres = genre.id ?? null"
               :class="[
-                'px-3 py-1 rounded-full transition-colors',
-                selectedGenres.includes(genre.name)
-                  ? 'bg-[#FF6B4A] text-white'
-                  : 'bg-[#020B34] border border-[#FF6B4A] text-white'
-              ]"
+              'px-3 py-1 rounded-full transition-colors',
+              selectedGenres === genre.id
+             ? 'bg-[#FF6B4A] text-white'
+             : 'bg-[#020B34] border border-[#FF6B4A] text-white'
+            ]"
             >
               {{ genre.name }}
             </button>

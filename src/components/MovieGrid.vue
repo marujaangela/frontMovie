@@ -11,23 +11,27 @@ const store = useMovieStore();
 const props = defineProps<{
   movies: Movie[]
 }>();
-
 const groupedMovies = computed(() => {
   if (!store.setSelectedGenre) {
     return store.moviesByGenre;
   }
 
-  const filtered: Record<string, Movie[]> = {};
-  if (store.setSelectedGenre) {
-    const genreMovies = props.movies.filter(movie =>
-      movie.genre.includes(store.setSelectedGenre!)
-    );
-    if (genreMovies.length > 0) {
-      filtered[store.setSelectedGenre] = genreMovies;
+  const groupedMoviesInner = computed(() => {
+    const filtered: Record<string, Movie[]> = {};
+    if (store.setSelectedGenre) {
+      const genreMovies = props.movies.filter(
+        (movie) => movie.genre === store.setSelectedGenre! // Direkter Vergleich mit der Genre-ID
+      );
+      if (genreMovies.length > 0) {
+        filtered[store.setSelectedGenre] = genreMovies; // Nutze die Genre-ID als Schlüssel
+      }
     }
-  }
-  return filtered;
+    return filtered;
+  });
+
+  return groupedMoviesInner.value;
 });
+
 </script>
 
 <template>

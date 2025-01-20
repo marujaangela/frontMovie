@@ -7,7 +7,7 @@ const store = useMovieStore();
 const isEditMode = ref(false);
 const isOpen = ref(false);
 
-const selectGenre = (genreId: string) => {
+const selectGenre = (genreId: number | null) => {
   store.setSelectedGenre = genreId;
   isOpen.value = false;
 };
@@ -29,8 +29,8 @@ const clearGenreFilter = () => {
           : 'border border-[#FF6B4A] text-[#FF6B4A] hover:bg-[#FF6B4A] hover:text-white'
       ]"
     >
-      {{ store.setSelectedGenre
-      ? store.genres.find((g) => g.name === store.setSelectedGenre)?.name
+      {{ store.setSelectedGenre !== null
+      ? store.genres.find((g) => g.id === store.setSelectedGenre)?.name || 'Unknown Genre'
       : 'Genre Filter' }}
     </button>
 
@@ -46,7 +46,7 @@ const clearGenreFilter = () => {
         <button
           v-for="genre in store.genres"
           :key="genre.id"
-          @click="selectGenre(genre.name)"
+          @click="selectGenre(genre.id ?? null)"
           class="w-full text-left px-3 py-2 text-white hover:bg-[#FF6B4A]/10 rounded-md transition-colors"
         >
           {{ genre.name }}

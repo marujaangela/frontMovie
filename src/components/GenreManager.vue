@@ -8,18 +8,21 @@ const newGenreName = ref('');
 const addGenre = () => {
   if (newGenreName.value.trim()) {
     store.addGenre({
-      name: newGenreName.value.trim()
+      name: newGenreName.value.trim() // Kein `id` übergeben
     });
     newGenreName.value = '';
   }
 };
 
-const handleDeleteGenre = (genreId: string, genreName: string) => {
+const handleDeleteGenre = (genreId: number | undefined, genreName: string) => {
+  if (genreId === undefined) {
+    console.error('Genre ID is undefined and cannot be deleted.');
+    return;
+  }
   if (confirm(`Are you sure you want to delete the genre "${genreName}"? This will remove it from all movies.`)) {
-    store.removeGenre(Number(genreId)); // Konvertiere genreId in eine Zahl
+    store.removeGenre(genreId);
   }
 };
-
 </script>
 
 <template>
@@ -48,7 +51,8 @@ const handleDeleteGenre = (genreId: string, genreName: string) => {
       >
         {{ genre.name }}
         <button
-          @click="handleDeleteGenre(genre.name, genre.name)"
+          v-if="genre.id !== undefined"
+          @click="handleDeleteGenre(genre.id, genre.name)"
           class="text-sm hover:text-red-200 ml-2"
           title="Delete genre"
         >

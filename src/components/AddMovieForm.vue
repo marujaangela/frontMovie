@@ -12,7 +12,7 @@ const title = ref('');
 const releaseYear = ref<number>(new Date().getFullYear());
 const imageUrl = ref('');
 const description = ref('');
-const selectedGenres = ref<string[]>([]);
+const selectedGenres = ref<number | null>(null);
 
 // Funktion: Film hinzufügen
 const addMovie = () => {
@@ -21,7 +21,7 @@ const addMovie = () => {
   const movie: Movie = {
     title: title.value.trim(),
     releaseYear: releaseYear.value,
-    genre: selectedGenres.value,
+    genre:  selectedGenres.value as number,
     imageUrl: imageUrl.value.trim(),
     description: description.value.trim(),
     watched: false, // Standardmäßig als "ungesehen" setzen
@@ -59,25 +59,23 @@ const addMovie = () => {
         </div>
 
         <div>
-          <label class="block text-white mb-2">Categories</label>
+          <label class="block text-white mb-2">Category</label>
           <div class="flex flex-wrap gap-2">
-            <!-- Genres auswählen -->
             <button
               type="button"
               v-for="genre in store.genres"
               :key="genre.id"
-              @click="selectedGenres.includes(genre.name)
-                ? selectedGenres = selectedGenres.filter(g => g !== genre.name)
-                : selectedGenres.push(genre.name)"
+              @click="selectedGenres === (genre.id ?? null) ? selectedGenres = null : selectedGenres = genre.id ?? null"
               :class="[
-                'px-3 py-1 rounded-full transition-colors',
-                selectedGenres.includes(genre.name)
-                  ? 'bg-[#FF6B4A] text-white'
-                  : 'bg-[#020B34] border border-[#FF6B4A] text-white'
-              ]"
+              'px-3 py-1 rounded-full transition-colors',
+              selectedGenres === genre.id
+                ? 'bg-[#FF6B4A] text-white'
+                : 'bg-[#020B34] border border-[#FF6B4A] text-white'
+             ]"
             >
               {{ genre.name }}
             </button>
+
           </div>
         </div>
 

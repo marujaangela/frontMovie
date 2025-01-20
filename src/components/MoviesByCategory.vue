@@ -8,13 +8,14 @@ const store = useMovieStore();
 
 const moviesByGenre = computed(() => {
   const grouped: Record<string, any[]> = {};
-  store.genres.forEach(genre => {
-    grouped[genre.name] = store.movies.filter(movie =>
-      movie.genre.includes(genre.name)
+  store.genres.forEach((genre) => {
+    grouped[genre.name] = store.movies.filter(
+      (movie) => movie.genre === genre.id // Direkter Vergleich zwischen `movie.genre` und `genre.id`
     );
   });
   return grouped;
 });
+
 </script>
 
 <template>

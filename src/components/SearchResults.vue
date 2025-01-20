@@ -23,16 +23,17 @@ const matchingGenres = computed(() => {
 
 const moviesByMatchingGenre = computed(() => {
   const results: Record<string, any[]> = {};
-  matchingGenres.value.forEach(genre => {
-    const movies = store.movies.filter(movie =>
-      movie.genre.includes(genre.name)
+  matchingGenres.value.forEach((genre) => {
+    const movies = store.movies.filter((movie) =>
+      movie.genre === genre.id // Direkter Vergleich mit numerischen Werten
     );
     if (movies.length > 0) {
-      results[genre.name] = movies;
+      results[genre.name] = movies; // Verwende den Namen des Genres als Schlüssel
     }
   });
   return results;
 });
+
 </script>
 
 <template>

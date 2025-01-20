@@ -14,10 +14,16 @@ const isHovered = ref(false);
 const isEditing = ref(false);
 
 const handleDelete = () => {
-  if (confirm('Are you sure you want to delete this movie?')) {
-    store.removeMovie(props.movie.title);
+  if (props.movie.id === undefined) {
+    console.error("Movie ID is undefined. Cannot delete the movie.");
+    return;
+  }
+
+  if (confirm(`Are you sure you want to delete the movie "${props.movie.title}"?`)) {
+    store.removeMovie(props.movie.id);
   }
 };
+
 </script>
 
 <template>
@@ -42,7 +48,7 @@ const handleDelete = () => {
 
         <div class="flex justify-between items-center">
           <button
-            @click.stop="store.toggleWatched(movie.title)"
+            @click.stop="movie.id !== undefined && store.toggleWatched(movie.id)"
             class="text-white hover:text-[#FF6B4A] transition-colors"
             :title="movie.watched ? 'Mark as unwatched' : 'Mark as watched'"
           >
